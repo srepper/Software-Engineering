@@ -6,7 +6,7 @@ import java.util.Vector;
 public class Test
 {
 	static int[] count = new int[50];
-	static Vector<Node> prioQ;
+	 static Vector<Node> prioQ;
 	static String[] codes;
 	static Path file = Paths.get("shape.exe");
 	static Path outFile = Paths.get("shape.fcd");
