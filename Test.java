@@ -8,24 +8,21 @@ public class Test
 	static int[] count = new int[50];
 	static Vector<Node> prioQ;
 	static String[] codes;
-	static Path file = Paths.get("shape.exe");
-	static Path outFile = Paths.get("shape.fcd");
-	static Path restoredFile = Paths.get("shape2.exe");
+	static Path file = Paths.get("song.mp3");
+	static Path outFile = Paths.get("song.fcd");
+	static Path restoredFile = Paths.get("song2.mp3");
+	static int originalSize;
 	
 	public static void main(String[] args) throws Exception
 	{
 		/**************************************************
 		 * Convert file to byte array
 		 *************************************************/
-		//Path file = Paths.get("song.mp3");
 		byte[] fileArray;
 		fileArray = Files.readAllBytes(file);
+		originalSize = fileArray.length;
+		file = null;
 		
-		/*
-		Path file2 = Paths.get("interfaces2.png");
-		byte[] buf = fileArray;
-		Files.write(file2, buf);
-		*/
 		
 		/**********************************************************************
 		 * Count each byte in the count[] array
@@ -54,28 +51,12 @@ public class Test
 				continue;
 			Node node = new Node((byte)(i & 0x0FF), count[i]);
 			pInsert(node);
-			/*
-			for(int j = 0; j <= prioQ.size(); j++)
-			{
-				if(prioQ.isEmpty() || 
-				  (j < prioQ.size() && node.getCount() < prioQ.get(j).getCount()))
-				{
-					prioQ.add(j, node);
-					break;
-				}
-				else if(j == prioQ.size())
-				{
-					prioQ.add(node);
-					break;
-				}
-			}
-			*/
 		}
 		
-		for(int i = 0; i < prioQ.size(); i++)
+		/*for(int i = 0; i < prioQ.size(); i++)     // Check byte occurrence counts
 		{
 			System.out.println(prioQ.get(i).getCount());
-		}
+		}*/
 		
 		/**********************************************************************
 		 * Combine smallest nodes by count until root remains; set tree root
@@ -94,38 +75,28 @@ public class Test
 		Node tree = node;
 		
 		codes = makeCode(tree);
+		prioQ = null;
 		
 		outputFile(fileArray);
 	}
 	
 	public static void outputFile(byte[] fileArray) throws Exception
 	{
-		StringBuilder sb = new StringBuilder(fileArray.length * Byte.SIZE);
-		String outputString = "";
-		String oStr = "";
+		StringBuilder sb = new StringBuilder(/*fileArray.length * Byte.SIZE*/);
+		byte[] output = new byte[1000];
+		int aryIndex = 0;
 		int step;
 		
+		int percent = 1;
 		for(int i = 0; i < fileArray.length; i++)
 		{
-			/*if(i % 8 == 0)
-			{  
-				if(output.length > 1)
-				{
-					byte[] temp = output;
-					byte[] fb = fromBinary(outputString);
-					output = new byte[temp.length + fb.length];
-					System.arraycopy(temp, 0, output, 0, temp.length);
-					System.arraycopy(fb, 0, output, temp.length, fb.length);
-				}
-				else
-					output = fromBinary(outputString);
-				
-				outputString = "";
-			}*/
-			if(i % 10000 == 0)
-				System.out.println(i);
-			if(i % 100000 == 0)
-				System.out.println("Not frozen.");
+			if(i == fileArray.length / 100 * percent)
+			{
+				System.out.println("Compression " + percent + " percent complete.");
+				percent++;
+			}
+			/*if(i % 100000 == 0)
+				System.out.println("Not frozen.");*/
 			
 			int index = codes.length / 2;
 			if((step = index/2) < 1)
@@ -136,7 +107,6 @@ public class Test
 				if((fileArray[i] & 0x0FF) == index)
 				{
 					sb.append(codes[index]);
-					//outputString += codes[index];
 					break;
 				}
 				else if((fileArray[i] & 0x0FF) < index)
@@ -152,34 +122,41 @@ public class Test
 						step /= 2;
 				}
 			}
+			
+			if(sb.length() >= 8)
+			{
+				if(aryIndex >= output.length)
+				{
+					byte[] temp = output;
+					output = new byte[temp.length * 2];
+					System.arraycopy(temp, 0, output, 0, temp.length);
+				}
+				/*String s = sb.toString();
+				int asdf = Integer.parseInt(s);
+				output[aryIndex++] = (byte)asdf;
+				*/
+				byte[] b = new byte[1];
+				b = fromBinary(sb.toString().substring(0,8));
+				output[aryIndex++] = b[0];
+				sb = new StringBuilder(sb.substring(8));
+			}
 		}
 		
-		/*byte[] temp = output;
-		byte[] fb = fromBinary(outputString);
-		output = new byte[temp.length + fb.length];
-		System.arraycopy(temp, 0, output, 0, temp.length);
-		System.arraycopy(fb, 0, output, temp.length, fb.length);*/
-		
-		/*
-		byte[] output = fromBinary(outputString.get(0));
-		for(int i = 1; i < outputString.size(); i++)
+		if(sb.length() > 0)
 		{
-				byte[] temp = output;
-				byte[] fb = fromBinary(outputString.get(i));
-				output = new byte[temp.length + fb.length];
-				System.arraycopy(temp, 0, output, 0, temp.length);
-				System.arraycopy(fb, 0, output, temp.length, fb.length);
+			byte[] b = new byte[1];
+			b = fromBinary(sb.toString());
+			output[aryIndex++] = b[0];
 		}
-		*/
 		
-		byte[] output = fromBinary(sb.toString());
+		byte[] temp = output; 
+		output = new byte[aryIndex];
+		System.arraycopy(temp, 0, output, 0, output.length);
+		
 		Files.write(outFile, output);
 		
-		/*temp = null;
-		fb = null;*/
 		output = null;
-		outputString = null;
-		
+				
 		byte[] compressedFile;
 		compressedFile = Files.readAllBytes(outFile);
 		
@@ -188,69 +165,84 @@ public class Test
 	
 	public static void decompress(byte[] compressedFile) throws Exception
 	{
-		String decompressString = "";
-		String temp = "";
-		String fileString = toBinary(compressedFile);
-		StringBuilder sb = new StringBuilder(compressedFile.length);
-		//byte[] decompressedFile = new byte[1];
-		for(int i = 0; i < fileString.length(); i++)
+		prioQ = new Vector<Node>();		
+		StringBuilder fileString = new StringBuilder();
+		byte[] decompressedFile = new byte[originalSize];
+		
+		sortCodes();
+		
+		byte[] b = new byte[1];
+		int i = 0;
+		int index = 0;
+		int percent = 1;
+		while(i < compressedFile.length)
 		{
-			temp += fileString.charAt(i);
-			
-			for(int x = 0; x < codes.length; x++)
+			if(fileString.length() < 16 && i < compressedFile.length)
 			{
-				if(temp.contentEquals(codes[x]))
+				b[0] = compressedFile[i++];
+				fileString.append(toBinary(b));
+				continue;
+			}
+			
+			for(int x = 0; x < prioQ.size(); x++)
+			{
+				if(fileString.toString().startsWith(prioQ.get(x).getCode()))
+				{
+					decompressedFile[index++] = (byte)prioQ.get(x).getData(); 
+					fileString = new StringBuilder(fileString.substring(prioQ.get(x).getCode().length()));
+					break;
+				}
+			}
+			
+			if(decompressedFile.length / 100 * percent == index)
+			{
+				System.out.println("Decompression " + percent + " percent complete.");
+				percent++;
+			}
+			
+			
+		}
+			
+		/*
+		int i = 0;
+		boolean exit = false;
+		//for(int i = 0; i < fileString.length(); i++)//(!fileString.isEmpty())
+		while(fileString.length() != 0)//fileString.isEmpty())
+		{
+			if(fileString.length() <= prioQ.get(0).getCode().length())
+				exit = true;
+			//temp += fileString.charAt(i);
+			
+			for(int x = 0; x < prioQ.size(); x++)
+			{
+				if(fileString.toString().startsWith(prioQ.get(x).getCode()))
+					//codes[x] != null && fileString.substring(i).startsWith(codes[x]))
+						//temp.contentEquals(codes[x]))
 				{
 					byte[] me = new byte[1];
-					me[0] = (byte)x; 
+					me[0] = (byte)prioQ.get(x).getData();//x; 
 					sb.append(toBinary(me));
 					//decompressString += toBinary(me);
-					temp = "";
+					//temp = "";
+					//fileString = fileString.substring(codes[x].length());
+					fileString = new StringBuilder(fileString.substring(prioQ.get(x).getCode().length()));
+					//fileString = fileString.substring(prioQ.get(x).getCode().length());//codes[x].length() - 1;
+					break;
 				}
 			}
 			
-			/*
-			if(decompressString.length() % 800 == 0)
-			{  
-				if(decompressedFile.length > 1)
-				{
-					byte[] outTemp = decompressedFile;
-					byte[] fb = fromBinary(decompressString);
-					decompressedFile = new byte[outTemp.length + fb.length];
-					System.arraycopy(outTemp, 0, decompressedFile, 0, outTemp.length);
-					System.arraycopy(fb, 0, decompressedFile, outTemp.length, fb.length);
-				}
-				else
-					decompressedFile = fromBinary(decompressString);
-				
-				decompressString = "";
-			}
-			*/
-			if(i % 500000 == 0)
+			//i++;
+			if(i++ % 1000 == 0)
 				System.out.println(i);
+			
+			if(exit)
+				break;
 		}
-		
-		/*byte[] outTemp = decompressedFile;
-		byte[] fb = fromBinary(decompressString);
-		decompressedFile = new byte[outTemp.length + fb.length];
-		System.arraycopy(outTemp, 0, decompressedFile, 0, outTemp.length);
-		System.arraycopy(fb, 0, decompressedFile, outTemp.length, fb.length);
+				
+		decompressString = sb.toString();
+		byte[] decompressedFile = fromBinary(sb.toString());
 		*/
 		
-		//byte[] decompressedFile = fromBinary(decompressString);
-		
-		/*byte[] decompressedFile = fromBinary(decompressString.get(0));
-		for(int i = 1; i < decompressString.size(); i++)
-		{
-			byte[] outTemp = decompressedFile;
-			byte[] fb = fromBinary(decompressString.get(i));
-			decompressedFile = new byte[outTemp.length + fb.length];
-			System.arraycopy(outTemp, 0, decompressedFile, 0, outTemp.length);
-			System.arraycopy(fb, 0, decompressedFile, outTemp.length, fb.length);
-		}*/
-		
-		//decompressString = sb.toString();
-		byte[] decompressedFile = fromBinary(sb.toString());
 		Files.write(restoredFile, decompressedFile);
 	}
 	
@@ -313,6 +305,20 @@ public class Test
 		return code;
 	}
 	
+	public static Vector<Node> sortCodes()
+	{
+		Vector<Node> sorted = new Vector<Node>();
+		for(int i = 0; i < codes.length; i++)
+		{
+			if(codes[i] != null)
+			{
+				Node n = new Node((byte)(i & 0x0FF), codes[i].length(), codes[i]);
+				pInsert(n);
+			}
+		}
+		return sorted;
+	}
+	
 	public static void addCode(Node root, String[] code)
 	{
 		if(root.getLeftChild() != null)
@@ -340,41 +346,6 @@ public class Test
 		count[b] += 1;
 	}
 	
-	/*
-	static String binaryToString(byte b)
-	{
-		String binaryString = "";
-		byte[] ref = new byte[]{(byte)0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
-		for(byte z = 0; z < 8; z++)
-		{
-			if((ref[z] & b) != 0)
-				binaryString += "1";
-			else
-				binaryString += "0";
-		}
-		
-		return binaryString;
-	}
-	*/
-	
-	/*
-	static int insert(char[] c, byte b)
-	{
-		for(int i = 0; i < c.length; i++)
-		{
-			if(c[i] == 0)
-			{
-				c[i] = (char) b;
-				return i;
-			}
-			if(c[i] == b)
-				return i;				
-		}
-		return -1;
-	}
-	*/
-	
-	
 	static String toBinary( byte[] bytes )
 	{
  		StringBuilder sb = new StringBuilder(bytes.length * Byte.SIZE);
@@ -395,26 +366,6 @@ public class Test
 				throw new IllegalArgumentException();
 		return toReturn;
 	}
-		
-	
-	/*
-	static String readFile(String pathname) throws IOException {
-
-	    File file = new File(pathname);
-	    StringBuilder fileContents = new StringBuilder((int)file.length());
-	    Scanner scanner = new Scanner(file);
-	    String lineSeparator = System.getProperty("line.separator");
-
-	    try {
-	        while(scanner.hasNextLine()) {        
-	            fileContents.append(scanner.nextLine() + lineSeparator);
-	        }
-	        return fileContents.toString();
-	    } finally {
-	        scanner.close();
-	    }
-	}
-	*/
 }
 
 class Node
@@ -434,6 +385,13 @@ class Node
 	{
 		data = b;
 		count = c;
+	}
+	
+	public Node(byte b, int c, String s)
+	{
+		data = b;
+		count = c;
+		code = s;
 	}
 	
 	public void setLeftChild(Node n)
