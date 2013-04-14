@@ -9,7 +9,7 @@ public class FilePartitioner {
 
 	public static void main(String[] args) throws IOException
 	{
-		partitionFile(Paths.get("archivalT1.txt"),13);
+		partitionFile(Paths.get("test1.txt"),13);
 	}
 public	static byte[] fileArray;
 public	static Vector<byte[]> outputArray;
@@ -18,6 +18,7 @@ public	static Vector<Path> outputFiles;
 	//need file manager
 	static boolean partitionFile(Path  file, int numPartitions) throws IOException
 	{
+		outputFiles = new Vector<Path>(0);
 		/***********************************************************************
 		 * Convert file to byte array
 		 **********************************************************************/
@@ -81,9 +82,12 @@ public	static Vector<Path> outputFiles;
 			String filePrefix;
 			Pattern p = Pattern.compile("(.*)\\.(.*)");
 			Matcher m = p.matcher(fileName);
-//			m.
-			Path outfile = Paths.get(file.toString() + i);
-			Files.write(outfile, outputArray.get(i));
+			if(m.matches()){
+				filePrefix = m.group(1);
+				String filePostFix = m.group(2);
+				outputFiles.add(Paths.get(filePrefix + "." +  filePostFix + i+ ".part"));
+				Files.write(outputFiles.get(i), outputArray.get(i));
+			}
 		}
 		
 		/** testing purposes
