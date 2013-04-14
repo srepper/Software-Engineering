@@ -10,6 +10,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
@@ -17,7 +18,10 @@ import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
 import javax.swing.AbstractListModel;
+import cdengine.FileCompressor;
 
 
 public class mainWindow {
@@ -32,6 +36,7 @@ public class mainWindow {
 	private JFileChooser fc = new JFileChooser();
 	private JList fileList;
 	private JLabel lbl_dest;
+	private static JProgressBar progressBar;
 
 	/**
 	 * Launch the application.
@@ -76,7 +81,7 @@ public class mainWindow {
 		lblStatus.setBounds(10, 11, 46, 14);
 		panel.add(lblStatus);
 		
-		JProgressBar progressBar = new JProgressBar();
+		progressBar = new JProgressBar();
 		progressBar.setBounds(237, 11, 452, 14);
 		panel.add(progressBar);
 		
@@ -192,6 +197,7 @@ public class mainWindow {
 		JButton btnExtract = new JButton("Extract");
 		btnExtract.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				//TODO:  File Encryption
 			}
 		});
 		btnExtract.setBounds(16, 99, 150, 32);
@@ -199,6 +205,25 @@ public class mainWindow {
 		
 		JButton btnCompress = new JButton("Compress");
 		btnCompress.setBounds(176, 99, 154, 32);
+		btnCompress.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0){
+				//TODO: Modify for archiving
+				DefaultListModel alm = (DefaultListModel) fileList.getModel();
+				String outFileString = lbl_dest.getText() + "\\"; 
+				outFileString += textField.getText() + ".fcd";
+				System.out.println(outFileString);
+				Path outFile = Paths.get(outFileString);
+				
+				FileCompressor fc = new FileCompressor(alm.get(0).toString());
+				byte[] output = fc.compressFile();
+				try {
+					Files.write(outFile, output);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null, "Failed to read input file.",  
+							"Results", JOptionPane.ERROR_MESSAGE);
+				}	
+			}
+		});
 		panel_3.add(btnCompress);
 		
 		rdbtnOfParts = new JRadioButton("# of parts");
@@ -274,5 +299,10 @@ public class mainWindow {
 		txtPartSize.setBounds(229, 70, 101, 20);
 		panel_3.add(txtPartSize);
 				
+	}
+	
+	public static void setProgress(int n)
+	{
+		progressBar.setValue(n);
 	}
 }
