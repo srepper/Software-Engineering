@@ -1,3 +1,5 @@
+package partitionerEngine;
+
 import java.util.Vector;
 import java.io.*;
 import java.nio.file.*;
@@ -28,7 +30,7 @@ public	static Vector<Path> outputFiles;
 			fileReadError();
 		}
 		
-		System.out.println("filearrya length: " + fileArray.length);
+		System.out.println("filearray length: " + fileArray.length);
 	
 		outputArray = new Vector<byte[]>(numPartitions);
 		
@@ -36,38 +38,26 @@ public	static Vector<Path> outputFiles;
 		for(int i = 0; i < numPartitions; i ++)
 		{System.out.println("i: " + i);
 			byte[] temp = new byte[0];
-			temp = new byte[(1+i)*(fileArray.length/numPartitions) - i*(fileArray.length/numPartitions)];
+			temp = new byte[((i==numPartitions-1)?fileArray.length:(1+i)*(fileArray.length/numPartitions)) - i*(fileArray.length/numPartitions)];
 			//
-			for(int j = i*(fileArray.length/numPartitions); j < (i+1)*(fileArray.length/numPartitions); j++)
+			System.out.println("for( j = " + i*(fileArray.length/numPartitions)+ "; j < " + ((i==numPartitions-1)?fileArray.length:(i+1)*(fileArray.length/numPartitions)) + "; j++)");
+			for(int j = i*(fileArray.length/numPartitions); j < ((i==numPartitions-1)?fileArray.length:(i+1)*(fileArray.length/numPartitions)); j++)
 			{
-				temp[j-i*(fileArray.length/numPartitions)] = fileArray[i*(fileArray.length/numPartitions) + j];
+				temp[j-i*(fileArray.length/numPartitions)] = fileArray[j];
 			}
 			//add to outputArray
 			outputArray.add(temp);
 		}
+
 		
-//		
-//		byte[] temp = new byte[fileArray.length/2];
-//		for(int i = 0; i < fileArray.length/2; i ++)
-//			temp[i] = fileArray[i];
-//		outputArray.add(temp);
-//		temp = new byte[(fileArray.length) - (fileArray.length/2)];
-//		for(int i = fileArray.length/2+1; i < fileArray.length-1; i ++)
-//			temp[i-fileArray.length/2-1] = fileArray[i];
-//		outputArray.add(temp);
+		
 		for(int i = 0; i < numPartitions; i ++)
 		{
 			Path outfile = Paths.get(file.toString() + i);
 			Files.write(outfile, outputArray.get(i));
 		}
-//		Path files = Paths.get(file.toString() + "1");
-//		Files.write(files, outputArray.get(0));
-//		
-//
-//		files = Paths.get(file.toString() + "2");
-//		Files.write(files, outputArray.get(1));
-//		
-		return false;
+	
+		return true;
 	}
 	/***************************************************************************
 	 * Error when file cannot be read to fileArray
