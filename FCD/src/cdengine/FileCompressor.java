@@ -15,34 +15,22 @@ public class FileCompressor {
 	private int originalSize;
 	private int percent;
 	private HuffmanTree huffTree;
-	private Path file;
 	private Path outFile;
 	private PrioQ prioQ;
 	private String[] codes;
 	private StringBuilder sb;
 	
 	
-	public FileCompressor(String s)
+	public FileCompressor(byte[] file)
 	{
-		file = Paths.get(s);
+		fileArray = file;
 		output = new byte[1000];
 		count = new int[50];
+		originalSize = fileArray.length;
 	}
 	
 	public byte[] compressFile()
-	{
-		/***********************************************************************
-		 * Convert file to byte array
-		 **********************************************************************/
-		try {
-			fileArray = Files.readAllBytes(file);
-		} catch (IOException e) {
-			fileReadError();
-		}
-		
-		originalSize = fileArray.length;
-		file = null;
-		
+	{	
 		/***********************************************************************
 		 * Add each byte count to the count array
 		 **********************************************************************/
