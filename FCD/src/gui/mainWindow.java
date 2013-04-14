@@ -37,6 +37,8 @@ public class mainWindow {
 	private JList fileList;
 	private JLabel lbl_dest;
 	private static JProgressBar progressBar;
+	
+	private FileCompressor fileCompressor;
 
 	/**
 	 * Launch the application.
@@ -208,17 +210,38 @@ public class mainWindow {
 		btnCompress.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
 				//TODO: Modify for archiving
-				DefaultListModel alm = (DefaultListModel) fileList.getModel();
-				String outFileString = lbl_dest.getText() + "\\"; 
-				outFileString += textField.getText() + ".fcd";
-				Path outFile = Paths.get(outFileString);
 				
-				FileCompressor fc = new FileCompressor(alm.get(0).toString());
-				byte[] output = fc.compressFile();
+				//Grab destination folder from lbl_dest
+				String outFileString = lbl_dest.getText() + "\\";
+				
+				//Append filename to folder
+				outFileString += textField.getText() + ".fcd";
+				
+				//Grab the file list as a DefaultListModel
+				DefaultListModel alm = (DefaultListModel) fileList.getModel();
+				
+				byte[] output = null;
+				//read byte array from file by file name
+				try{
+					output = Files.readAllBytes(Paths.get(alm.get(0).toString()));
+				} catch(IOException e){
+					JOptionPane.showMessageDialog(null,
+							"Failed to read input file.",  
+							"Results", JOptionPane.ERROR_MESSAGE);
+				}
+				fileCompressor = new FileCompressor(output);
+				
+				//do file compression; set output to return
+				output = fileCompressor.compressFile();
+						
+				//Create output file
+				Path outFile = Paths.get(outFileString);
 				try {
+					//Write the output file to disk
 					Files.write(outFile, output);
 				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Failed to read input file.",  
+					JOptionPane.showMessageDialog(null,
+							"Failed to write output file.",  
 							"Results", JOptionPane.ERROR_MESSAGE);
 				}	
 			}
