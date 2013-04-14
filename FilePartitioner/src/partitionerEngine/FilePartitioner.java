@@ -11,7 +11,7 @@ public class FilePartitioner {
 	{
 //		partitionFile(Paths.get("test1.txt"),13);
 		Vector<Path>fileArray = new Vector<Path>(0);
-		for(int i = 0; i < 13; i ++)
+		for(int i = 12; i >= 0; i --)
 		{
 			fileArray.add(Paths.get("test1.txt" + i +".part"));
 		}

@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 
 public class FileDePartitioner {
+	
 	static Vector<Path> fileArray;
 	static Vector<byte[]> fileArrayByte = new Vector<byte[]>(0);
 	static byte[] outputArray;
@@ -46,13 +47,16 @@ public class FileDePartitioner {
 		
 		outputArray = new byte[counter];
 		counter = 0;
-		for(int i = 0; i < fileArrayByte.size(); i++)
+		for(int i = 0; i < fileArrayByte.size(); i ++)
 		{
-			if(fileArrayByte.get(i)[0] == Byte.valueOf("" + i))
+			for(int j = 0; j < fileArrayByte.size(); j++)
 			{
-				for(int j = (fileArrayByte.get(i)[0] == Byte.valueOf("0")?2:1);j < fileArrayByte.get(i).length	; j ++)
+				if(fileArrayByte.get(j)[0] == Byte.valueOf("" + i))
 				{
-					outputArray[counter++] = fileArrayByte.get(i)[j];
+					for(int k = (fileArrayByte.get(i)[0] == Byte.valueOf("0")?2:1);k < fileArrayByte.get(j).length	; k ++)
+					{
+						outputArray[counter++] = fileArrayByte.get(j)[k];
+					}
 				}
 			}
 		}
