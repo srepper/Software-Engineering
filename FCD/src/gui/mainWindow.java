@@ -234,7 +234,7 @@ public class mainWindow {
 				//do file compression; set output to return
 				output = fileCompressor.compressFile();
 						
-				//Create output file
+				//Create output file path
 				Path outFile = Paths.get(outFileString);
 				try {
 					//Write the output file to disk

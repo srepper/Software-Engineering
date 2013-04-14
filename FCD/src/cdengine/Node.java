@@ -4,7 +4,7 @@ public class Node
 {
 	Node leftChild = null;
 	Node rightChild = null;
-	byte data;
+	int data;
 	int count;
 	String code = "";
 	
@@ -13,15 +13,15 @@ public class Node
 		count = c;
 	}
 	
-	public Node(byte b, int c)
+	public Node(int d, int c)
 	{
-		data = b;
+		data = d;
 		count = c;
 	}
 	
-	public Node(byte b, int c, String s)
+	public Node(int d, int c, String s)
 	{
-		data = b;
+		data = d;
 		count = c;
 		code = s;
 	}
@@ -61,7 +61,7 @@ public class Node
 		return count;
 	}
 	
-	public byte getData()
+	public int getData()
 	{
 		return data;
 	}
