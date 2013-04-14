@@ -7,13 +7,19 @@ import java.util.regex.*;
 import javax.swing.JOptionPane;
 public class FilePartitioner {
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
-		partitionFile(Paths.get("test1.txt"),13);
+//		partitionFile(Paths.get("test1.txt"),13);
+		Vector<Path>fileArray = new Vector<Path>(0);
+		for(int i = 0; i < 13; i ++)
+		{
+			fileArray.add(Paths.get("test1.txt" + i +".part"));
+		}
+		FileDePartitioner.departitionFile(fileArray);
 	}
-public	static byte[] fileArray;
-public	static Vector<byte[]> outputArray;
-public	static Vector<Path> outputFiles;
+		static byte[] fileArray;
+		static Vector<byte[]> outputArray;
+		static Vector<Path> outputFiles;
 	
 	//need file manager
 	static boolean partitionFile(Path  file, int numPartitions) throws IOException
@@ -28,17 +34,17 @@ public	static Vector<Path> outputFiles;
 			fileReadError();
 		}
 		
-		System.out.println("filearray length: " + fileArray.length);
+//		System.out.println("filearray length: " + fileArray.length);
 	
 		outputArray = new Vector<byte[]>(numPartitions);
 		
 		//get all partitions
 		for(int i = 0; i < numPartitions; i ++)
-		{System.out.println("i: " + i);
+		{
 			byte[] temp = new byte[0];
 			temp = new byte[((i==numPartitions-1)?fileArray.length:(1+i)*(fileArray.length/numPartitions)) - i*(fileArray.length/numPartitions)];
 			//
-			System.out.println("for( j = " + i*(fileArray.length/numPartitions)+ "; j < " + ((i==numPartitions-1)?fileArray.length:(i+1)*(fileArray.length/numPartitions)) + "; j++)");
+//			System.out.println("for( j = " + i*(fileArray.length/numPartitions)+ "; j < " + ((i==numPartitions-1)?fileArray.length:(i+1)*(fileArray.length/numPartitions)) + "; j++)");
 			for(int j = i*(fileArray.length/numPartitions); j < ((i==numPartitions-1)?fileArray.length:(i+1)*(fileArray.length/numPartitions)); j++)
 			{
 				temp[j-i*(fileArray.length/numPartitions)] = fileArray[j];
@@ -52,8 +58,8 @@ public	static Vector<Path> outputFiles;
 		
 		
 		byte[] tempbyte = new byte[outputArray.get(0).length+2];
-		tempbyte[0] = Byte.valueOf(numPartitions+"", 10);//numPartitions + "");
-		tempbyte[1] = Byte.valueOf("0", 10);
+		tempbyte[0] = Byte.valueOf(0+"", 10);//numPartitions + "");
+		tempbyte[1] = Byte.valueOf(numPartitions+ "", 10);
 		for(int i = 2; i < outputArray.get(0).length+2; i ++)
 		{
 			tempbyte[i] = outputArray.get(0)[i-2];
@@ -77,7 +83,6 @@ public	static Vector<Path> outputFiles;
 		//write to file
 		for(int i = 0; i < numPartitions; i ++)
 		{
-			System.out.println("file name " + file.toString());
 			String fileName = file.toString();
 			String filePrefix;
 			Pattern p = Pattern.compile("(.*)\\.(.*)");
@@ -90,11 +95,10 @@ public	static Vector<Path> outputFiles;
 			}
 		}
 		
-		/** testing purposes
-		*  Path testFile = Paths.get(file.toString() + "1");
-		*  byte[] testByte = Files.readAllBytes(testFile);
-		*  System.out.println("testByte[0]: " + testByte[0] + "\ntestByte[1]: " + testByte[1]);
-		*  */
+//		Path testFile = Paths.get("test1.txt0.part");
+//		byte[] testByte = Files.readAllBytes(testFile);
+//		System.out.println("testByte[0]: " + testByte[0] + ". testByte[1]: " + testByte[1]);
+		
 		
 		  return true;
 		

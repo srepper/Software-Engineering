@@ -8,11 +8,11 @@ import javax.swing.JOptionPane;
 
 public class FileDePartitioner {
 	static Vector<Path> fileArray;
-	static Vector<byte[]> fileArrayByte;
+	static Vector<byte[]> fileArrayByte = new Vector<byte[]>(0);
 	static byte[] outputArray;
 	static Path outputFile;
-	
-	static boolean departitionFile(Vector<Path>fileArray)
+
+	static boolean departitionFile(Vector<Path>fileArray) throws Exception
 	{
 		for(int i = 0; i < fileArray.size(); i++)
 		{
@@ -23,13 +23,48 @@ public class FileDePartitioner {
 			}
 		}
 		
-		
+		int numberPartitions = 0;
 		for(int i = 0 ; i < fileArrayByte.size(); i ++)
 		{
-			if(fileArrayByte.get(i)[0] == 1)
+
+			if(fileArrayByte.get(i)[0] == Byte.valueOf("0"))
 			{
+				numberPartitions = Integer.parseInt("" +fileArrayByte.get(i)[1]);
+
 				
 			}
+		}
+		int counter = 0;
+		for(int i = 0; i <fileArrayByte.size(); i ++)
+		{
+			counter += fileArrayByte.get(i).length;
+		}
+		//subtract 1 byte per array for the header, and then 1 extra for the double header on #1
+		counter = counter - (fileArrayByte.size()) - 1;
+		if(numberPartitions != fileArrayByte.size())
+			throw new Exception ("hey, you didnt give me all the files");
+		
+		outputArray = new byte[counter];
+		counter = 0;
+		for(int i = 0; i < fileArrayByte.size(); i++)
+		{
+			if(fileArrayByte.get(i)[0] == Byte.valueOf("" + i))
+			{
+				for(int j = (fileArrayByte.get(i)[0] == Byte.valueOf("0")?2:1);j < fileArrayByte.get(i).length	; j ++)
+				{
+					outputArray[counter++] = fileArrayByte.get(i)[j];
+				}
+			}
+		}
+		
+		
+		
+		Pattern p = Pattern.compile("(.*?)(\\d+).(part)");
+		Matcher m = p.matcher(fileArray.get(0).toString());
+		if(m.matches())
+		{
+			outputFile = Paths.get(m.group(1));
+			Files.write(outputFile, outputArray);
 		}
 		
 		
