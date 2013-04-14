@@ -3,13 +3,13 @@ package partitionerEngine;
 import java.util.Vector;
 import java.io.*;
 import java.nio.file.*;
-
+import java.util.regex.*;
 import javax.swing.JOptionPane;
 public class FilePartitioner {
 
 	public static void main(String[] args) throws IOException
 	{
-		partitionFile(Paths.get("test1.txt"),13);
+		partitionFile(Paths.get("archivalT1.txt"),13);
 	}
 public	static byte[] fileArray;
 public	static Vector<byte[]> outputArray;
@@ -18,9 +18,6 @@ public	static Vector<Path> outputFiles;
 	//need file manager
 	static boolean partitionFile(Path  file, int numPartitions) throws IOException
 	{
-//		byte[] fileArray = new byte[0];
-//			 Vector<byte[]> outputArray;
-//			 Vector<Path> outputFiles;
 		/***********************************************************************
 		 * Convert file to byte array
 		 **********************************************************************/
@@ -79,6 +76,12 @@ public	static Vector<Path> outputFiles;
 		//write to file
 		for(int i = 0; i < numPartitions; i ++)
 		{
+			System.out.println("file name " + file.toString());
+			String fileName = file.toString();
+			String filePrefix;
+			Pattern p = Pattern.compile("(.*)\\.(.*)");
+			Matcher m = p.matcher(fileName);
+//			m.
 			Path outfile = Paths.get(file.toString() + i);
 			Files.write(outfile, outputArray.get(i));
 		}
@@ -87,8 +90,10 @@ public	static Vector<Path> outputFiles;
 		*  Path testFile = Paths.get(file.toString() + "1");
 		*  byte[] testByte = Files.readAllBytes(testFile);
 		*  System.out.println("testByte[0]: " + testByte[0] + "\ntestByte[1]: " + testByte[1]);
-		*  return true;
 		*  */
+		
+		  return true;
+		
 	}
 	/***************************************************************************
 	 * Error when file cannot be read to fileArray
