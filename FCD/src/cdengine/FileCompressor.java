@@ -25,9 +25,6 @@ public class FileCompressor {
 	public FileCompressor(String s)
 	{
 		file = Paths.get(s);
-		s = s.substring(0, s.lastIndexOf('.'));
-		outFile = Paths.get(s + ".fcd");
-		sb = new StringBuilder();
 		output = new byte[1000];
 		count = new int[50];
 	}
@@ -62,7 +59,9 @@ public class FileCompressor {
 		huffTree = new HuffmanTree(prioQ);
 		huffTree.buildTree();
 		codes = huffTree.makeCodes(count);
+		int[][] sortedCodes = sortCodes();
 		
+		sb = new StringBuilder();
 		percent = 1;
 		aryIndex = 0;
 		for(int i = 0; i < fileArray.length; i++)
@@ -79,17 +78,10 @@ public class FileCompressor {
 		if(sb.length() > 0)
 			addOutputByte();
 		
-		byte[] b = new byte[1];
-		b = fromBinary(sb.toString());
-		output[aryIndex++] = b[0];
-		/*
-		try {
-			Files.write(outFile, output);
-		} catch (IOException e) {
-			fileWriteError();
-			return false;
-		}
-		*/
+		byte[] temp = output; 
+		output = new byte[aryIndex];
+		System.arraycopy(temp, 0, output, 0, output.length);
+		
 		return output;
 	}
 	
@@ -216,9 +208,32 @@ public class FileCompressor {
 		if(i == fileArray.length / 100 * percent)
 		{
 			mainWindow.setProgress(percent);
-			//TODO:  Interface with progress bar
 			percent++;
 		}
+	}
+	
+	/***************************************************************************
+	 * Update progress bar on UI?
+	 **************************************************************************/
+	private int[][] sortCodes()
+	{
+		PrioQ pq = new PrioQ();
+		for(int i = 0; i < codes.length; i++)
+		{
+			if(codes[i] != null)
+			{
+				Node n = new Node((byte)(i & 0x0FF), codes[i].length(), codes[i]);
+				pq.insert(n);
+			}
+		}
+		
+		int[][] sorted = new int[pq.size()][2];
+		for(int i = 0; i < pq.size(); i++)	
+		{
+			sorted[i][0] = pq.get(i).getData();
+			sorted[i][1] = Integer.parseInt(pq.get(i).getCode(), 2);
+		}
+		return sorted;
 	}
 	
 	/***************************************************************************

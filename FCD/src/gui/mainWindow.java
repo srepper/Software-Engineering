@@ -211,7 +211,6 @@ public class mainWindow {
 				DefaultListModel alm = (DefaultListModel) fileList.getModel();
 				String outFileString = lbl_dest.getText() + "\\"; 
 				outFileString += textField.getText() + ".fcd";
-				System.out.println(outFileString);
 				Path outFile = Paths.get(outFileString);
 				
 				FileCompressor fc = new FileCompressor(alm.get(0).toString());
