@@ -7,16 +7,7 @@ import java.util.regex.*;
 import javax.swing.JOptionPane;
 public class FilePartitioner {
 
-	public static void main(String[] args) throws Exception
-	{
-//		partitionFile(Paths.get("test1.txt"),13);
-		Vector<Path>fileArray = new Vector<Path>(0);
-		for(int i = 12; i >= 0; i --)
-		{
-			fileArray.add(Paths.get("test1.txt" + i +".part"));
-		}
-		FileDePartitioner.departitionFile(fileArray);
-	}
+	
 		static byte[] fileArray;
 		static Vector<byte[]> outputArray;
 		static Vector<Path> outputFiles;
