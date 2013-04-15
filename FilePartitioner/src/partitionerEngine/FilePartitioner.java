@@ -9,11 +9,11 @@ public class FilePartitioner {
 
 	public static void main(String[] args) throws Exception
 	{
-//		partitionFile(Paths.get("test1.txt"),13);
+//		partitionFile(Paths.get("project3.pdf"),10);
 		Vector<Path>fileArray = new Vector<Path>(0);
-		for(int i = 12; i >= 0; i --)
+		for(int i = 9; i >= 0; i --)
 		{
-			fileArray.add(Paths.get("test1.txt" + i +".part"));
+			fileArray.add(Paths.get("project3.pdf" + i +".part"));
 		}
 		FileDePartitioner.departitionFile(fileArray);
 	}
