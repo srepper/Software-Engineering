@@ -2,8 +2,7 @@ package cdengine;
 
 import gui.mainWindow;
 
-import java.io.IOException;
-import java.nio.file.*;
+import java.io.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -13,23 +12,22 @@ import javax.swing.JOptionPane;
 public class FileCompressor {
 	private byte[] fileArray;
 	private byte[] output;
+	private byte[] canonLengths;
+	private byte[] fileExtension;
 	private int[] count;
 	private int aryIndex;
-	private int originalSize;
 	private int percent;
 	private HuffmanTree huffTree;
-	private Path outFile;
 	private PrioQ prioQ;
 	private String[] codes;
 	private StringBuilder sb;
-	
 	
 	public FileCompressor(byte[] file)
 	{
 		fileArray = file;
 		output = new byte[1000];
 		count = new int[50];
-		originalSize = fileArray.length;
+		canonLengths = new byte[256];
 	}
 	
 	public byte[] compressFile()
@@ -52,14 +50,15 @@ public class FileCompressor {
 		codes = huffTree.makeCodes(count);
 		prioQ = new PrioQ(sortCodes(codes));
 		makeCanonicalCodes(prioQ);
+		appendCanonCodeLengths();
 		
 		sb = new StringBuilder();
 		percent = 1;
-		aryIndex = 0;
+
 		for(int i = 0; i < fileArray.length; i++)
 		{
 			reportPercent(i);
-			buildOutputString(codes.length / 2, i);
+			buildOutput(codes.length / 2, i);
 			if(sb.length() >= 8)
 			{
 				addOutputByte();
@@ -75,6 +74,22 @@ public class FileCompressor {
 		System.arraycopy(temp, 0, output, 0, output.length);
 		
 		return output;
+	}
+	
+	/***************************************************************************
+	 * Sets the appropriate file extension in bytes
+	 **************************************************************************/
+	public void setFileExtension(String fileName)
+	{
+		String ext = fileName.substring(fileName.lastIndexOf('.'));
+		
+		try {
+			fileExtension = ext.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			JOptionPane.showMessageDialog(null,
+					"Failed to set file extension.",  
+					"Results", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	/***************************************************************************
@@ -105,7 +120,7 @@ public class FileCompressor {
 		}
 		
 		byte[] b = new byte[1];
-		//if(sb.length() < 8)
+		
 		b = (sb.length() < 8? 
 				fromBinary(sb.toString().substring(0)): 
 				fromBinary(sb.toString().substring(0,8)));
@@ -113,9 +128,40 @@ public class FileCompressor {
 	}
 	
 	/***************************************************************************
+	 * Calculate length for each code and put the codes on the output file
+	 **************************************************************************/
+	private void appendCanonCodeLengths()
+	{
+		int index = 0;
+		for(int i = 0; i <  canonLengths.length; i++)
+		{
+			if(codes[i] == null)
+				canonLengths[i] = 0;
+			else
+				canonLengths[i] = (byte)(codes[i].length());
+			
+			output[i] = canonLengths[i];
+			index++;
+		}
+		
+		if(fileExtension != null)
+		{
+			output[index++] = (byte)fileExtension.length;
+			for(int i = 0; i < fileExtension.length; i++)
+			{
+				output[index++] = fileExtension[i];
+			}
+		}
+		else
+			output[index++] = (byte)0;
+		
+		aryIndex = index;
+	}
+	
+	/***************************************************************************
 	 * Build binary string output from Huffman codes
 	 **************************************************************************/
-	private void buildOutputString(int index, int i)
+	private void buildOutput(int index, int i)
 	{
 		int step;
 		if((step = index / 2) < 1)
@@ -150,34 +196,59 @@ public class FileCompressor {
 		JOptionPane.showMessageDialog(null, "File conversion error.",  
 				"Results", JOptionPane.ERROR_MESSAGE);
 	}
-		
-	/***************************************************************************
-	 * Error when file cannot be read to fileArray
-	 **************************************************************************/
-	private void fileReadError()
-	{
-		JOptionPane.showMessageDialog(null, "Failed to read input file.",  
-				"Results", JOptionPane.ERROR_MESSAGE);
-	}
 	
-	private String[] makeCanonicalCodes(PrioQ p)
+	/***************************************************************************
+	 * Create canonical Huffman codes from the dynamic codes
+	 **************************************************************************/
+	private void makeCanonicalCodes(PrioQ p)
 	{
-		String[] cCodes = new String[p.size()];
-		
-		String s = "";
+		String s = "0";
 		while(s.length() < p.get(0).getCode().length())
 		{
 			s += "0";
 		}
-		cCodes[0] = s;
+		
+		p.get(0).setCanCode(s);
+		codes[p.get(0).getData()] = s;
 		
 		int n = 1;
 		for(int i = 1; i < p.size(); i++)
 		{
+			while(Integer.toBinaryString(n).length() < 
+					p.get(i).getCode().length())
+			{
+				n = n << 1;
+			}
 			
+			p.get(i).setCanCode(Integer.toBinaryString(n));
+			codes[p.get(i).getData()] = Integer.toBinaryString(n);
+			if(Integer.parseInt(Integer.toBinaryString(n+1),2) < 0)
+				n = 0;
+			n++;
 		}
 		
-		return cCodes;
+		String out = "";
+		File file = new File("stringsFileCompressor.txt");
+		try{
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+		for(int i = 0; i < p.size(); i++)
+		{
+			String num = Integer.toBinaryString(p.get(i).getData());
+			while(num.length() < 8)
+				num = "0" + num;
+			out += num + "\t  :" + 
+				p.get(i).getCode() + "\n";
+			bw.write(out);
+			bw.newLine();
+			out = "";
+		}
+	
+		bw.close();
+		}catch(Exception exc){}
+		
+		int asldkf = 5;
+		asldkf = asldkf + 5;
 	}
 	
 	/***************************************************************************
@@ -213,7 +284,7 @@ public class FileCompressor {
 	}
 	
 	/***************************************************************************
-	 * Update progress bar on UI?
+	 * Update progress bar on UI
 	 **************************************************************************/
 	private void reportPercent(int i)
 	{
@@ -225,7 +296,7 @@ public class FileCompressor {
 	}
 	
 	/***************************************************************************
-	 * Update progress bar on UI?
+	 * Sort the dynamic Huffman codes
 	 **************************************************************************/
 	private Vector<Node> sortCodes(String[] s)
 	{
@@ -256,44 +327,7 @@ public class FileCompressor {
 	    });
 		
 		return nodes;
-	}	
-	
-		/*
-		PrioQ pq = new PrioQ();
-		for(int i = 0; i < codes.length; i++)
-		{
-			if(codes[i] != null)
-			{
-				Node n = new Node(i, codes[i].length(), codes[i]);
-				pq.insert(n);
-			}
-		}
-		
-		for(int i = 0; i < pq.size() - 1; i++)
-		{
-			int x = i;
-			while(x < pq.size() - 1 && 
-					pq.get(x).getCount() == pq.get(x + 1).getCount() && 
-					pq.get(x).getData() > pq.get(x + 1).getData())
-			{
-				Node n = new Node(pq.get(x).getData(), pq.get(x).getCount(),
-						pq.get(x).getCode());
-				pq.remove(x);
-				pq.insert(x + 1, n);
-				x++;
-			}
-		}
-		int aslk = 0;
-		*/
-		/*
-		int[][] sorted = new int[pq.size()][2];
-		for(int i = 0; i < pq.size(); i++)	
-		{
-			sorted[i][0] = pq.get(i).getData();
-			sorted[i][1] = Integer.parseInt(pq.get(i).getCode(), 2);
-		}*/
-		//return sorted;
-	
+	}
 	
 	/***************************************************************************
 	 * Total the count & verify against fileArray length

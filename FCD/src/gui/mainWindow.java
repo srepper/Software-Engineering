@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import javax.swing.AbstractListModel;
 import cdengine.FileCompressor;
+import cdengine.FileDecompressor;
 
 
 public class mainWindow {
@@ -39,6 +40,7 @@ public class mainWindow {
 	private static JProgressBar progressBar;
 	
 	private FileCompressor fileCompressor;
+	private FileDecompressor fileDecompressor;
 
 	/**
 	 * Launch the application.
@@ -198,8 +200,46 @@ public class mainWindow {
 		
 		JButton btnExtract = new JButton("Extract");
 		btnExtract.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//TODO:  File Encryption
+			public void actionPerformed(ActionEvent arg0){
+				//TODO: Modify for archiving
+				
+				//Grab destination folder from lbl_dest
+				String outFileString = lbl_dest.getText() + "\\";
+				
+				//Append filename to folder
+				outFileString += textField.getText();
+				
+				//Grab the file list as a DefaultListModel
+				DefaultListModel alm = (DefaultListModel) fileList.getModel();
+				
+				byte[] output = null;
+				//read byte array from file by file name
+				try{
+					output = Files.readAllBytes(Paths.get(alm.get(0).toString()));
+				} catch(IOException e){
+					JOptionPane.showMessageDialog(null,
+							"Failed to read input file.",  
+							"Results", JOptionPane.ERROR_MESSAGE);
+				}
+				fileDecompressor = new FileDecompressor(output);
+				
+				//do file decompression; set output to return
+				output = fileDecompressor.decompressFile();
+				
+				if(fileDecompressor.getFileExtension() != null)
+					outFileString += fileDecompressor.getFileExtension();
+						
+				//Create output file path
+				Path outFile = Paths.get(outFileString);
+				
+				try {
+					//Write the output file to disk
+					Files.write(outFile, output);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null,
+							"Failed to write output file.",  
+							"Results", JOptionPane.ERROR_MESSAGE);
+				}	
 			}
 		});
 		btnExtract.setBounds(16, 99, 150, 32);
@@ -224,15 +264,20 @@ public class mainWindow {
 				DefaultListModel alm = (DefaultListModel) fileList.getModel();
 				
 				byte[] output = null;
+				String fileName = null;
+				fileName = alm.get(0).toString();
+				
 				//read byte array from file by file name
 				try{
-					output = Files.readAllBytes(Paths.get(alm.get(0).toString()));
+					output = Files.readAllBytes(Paths.get(fileName));
+					
 				} catch(IOException e){
 					JOptionPane.showMessageDialog(null,
 							"Failed to read input file.",  
 							"Results", JOptionPane.ERROR_MESSAGE);
 				}
 				fileCompressor = new FileCompressor(output);
+				fileCompressor.setFileExtension(fileName);
 				
 				//do file compression; set output to return
 				output = fileCompressor.compressFile();
@@ -246,7 +291,9 @@ public class mainWindow {
 					JOptionPane.showMessageDialog(null,
 							"Failed to write output file.",  
 							"Results", JOptionPane.ERROR_MESSAGE);
-				}	
+				}
+				
+				fileCompressor = null;
 			}
 		});
 		panel_3.add(btnCompress);

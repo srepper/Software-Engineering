@@ -36,6 +36,11 @@ public class Node
 		rightChild = n;
 	}
 	
+	public void setCanCode(String s)
+	{
+		code = s;
+	}
+	
 	public void setCode(String s)
 	{
 		code = code + s;
@@ -64,5 +69,11 @@ public class Node
 	public int getData()
 	{
 		return data;
+	}
+	
+	public byte getByteData()
+	{
+		byte b = (byte) data;
+		return b;
 	}
 }
