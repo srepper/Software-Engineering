@@ -205,6 +205,9 @@ public class mainWindow {
 		btnExtract.setBounds(16, 99, 150, 32);
 		panel_3.add(btnExtract);
 		
+		/*********************
+		 * COMPRESSION BUTTON
+		 ********************/
 		JButton btnCompress = new JButton("Compress");
 		btnCompress.setBounds(176, 99, 154, 32);
 		btnCompress.addActionListener(new ActionListener(){
