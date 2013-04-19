@@ -1,4 +1,4 @@
-package partitionerEngine;
+
 import java.util.Vector;
 import java.io.*;
 import java.nio.file.*;
@@ -12,7 +12,16 @@ public class FileDePartitioner {
 	static Vector<byte[]> fileArrayByte = new Vector<byte[]>(0);
 	static byte[] outputArray;
 	static Path outputFile;
-
+	public static void main(String[] args) throws Exception
+	{
+		
+		Vector<Path>fileArray = new Vector<Path>(0);
+		for(int i = 9; i >= 0; i --)
+		{
+			fileArray.add(Paths.get(args[0] + i +".part"));
+		}
+		FileDePartitioner.departitionFile(fileArray);
+	}
 	static boolean departitionFile(Vector<Path>fileArray) throws Exception
 	{
 		for(int i = 0; i < fileArray.size(); i++)

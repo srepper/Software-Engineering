@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="15" version="2.0">
+<workbench progressCount="20" version="2.0">
 <workbenchAdvisor/>
 <window height="768" maximized="true" width="1024" x="0" y="22">
 <fastViewData fastViewLocation="1024"/>
@@ -30,6 +30,7 @@
 <part id="0"/>
 <part id="1"/>
 <part id="2"/>
+<part id="3"/>
 </presentation>
 </folder>
 </info>
@@ -42,9 +43,13 @@
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/FCD/src/cdengine/FileCompressor.java"/>
 <editorState selectionHorizontalPixel="0" selectionLength="23" selectionOffset="3579" selectionTopPixel="1740"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FileDePartitioner.java" partName="FileDePartitioner.java" path="/Users/tylermorris/Documents/Software-Engineering/FCD/src/partitionerEngine/FileDePartitioner.java" title="FileDePartitioner.java" tooltip="FCD/src/partitionerEngine/FileDePartitioner.java" workbook="DefaultEditorWorkbook">
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FileDePartitioner.java" partName="FileDePartitioner.java" path="/Users/tylermorris/Documents/Software-Engineering/FCD/src/partitionerEngine/FileDePartitioner.java" title="FileDePartitioner.java" tooltip="FCD/src/partitionerEngine/FileDePartitioner.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/FCD/src/partitionerEngine/FileDePartitioner.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="2292" selectionOffset="0" selectionTopPixel="408"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="906" selectionTopPixel="408"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="mainWindow.java" partName="mainWindow.java" path="/Users/tylermorris/Documents/Software-Engineering/FCD/src/gui/mainWindow.java" title="mainWindow.java" tooltip="FCD/src/gui/mainWindow.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/FCD/src/gui/mainWindow.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="11255" selectionTopPixel="2657"/>
 </editor>
 </editors>
 <views>
@@ -221,6 +226,8 @@
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/FCD/src/partitionerEngine/FilePartitioner.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/FCD/src/cdengine/FileCompressor.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/FCD/src/partitionerEngine/FileDePartitioner.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/FCD/src/gui/mainWindow.java"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" uri="file:/Users/tylermorris/Documents/Software-Engineering/FilePartitioner/src/partitionerEngine/FilePartitioner.java"/>
 </editors>
 <item historyLabel="FilePartitioner.java" index="0">
 <position info="not_deleted" x="0" y="0"/>
@@ -243,8 +250,20 @@
 <item historyLabel="FileDePartitioner.java" index="2">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item active="true" historyLabel="FileDePartitioner.java" index="2">
+<item historyLabel="FileDePartitioner.java" index="2">
 <position info="not_deleted" x="1904" y="0"/>
+</item>
+<item historyLabel="mainWindow.java" index="3">
+<position info="not_deleted" x="11255" y="0"/>
+</item>
+<item historyLabel="mainWindow.java" index="3">
+<position info="not_deleted" x="11255" y="0"/>
+</item>
+<item historyLabel="FilePartitioner.java" index="4">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item active="true" historyLabel="mainWindow.java" index="3">
+<position info="not_deleted" x="11255" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -263,6 +282,12 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FilePartitioner.java" tooltip="/Users/tylermorris/Documents/Software-Engineering/FilePartitioner/src/partitionerEngine/FilePartitioner.java">
+<persistable uri="file:/Users/tylermorris/Documents/Software-Engineering/FilePartitioner/src/partitionerEngine/FilePartitioner.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="mainWindow.java" tooltip="FCD/src/gui/mainWindow.java">
+<persistable path="/FCD/src/gui/mainWindow.java"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FileDePartitioner.java" tooltip="FCD/src/partitionerEngine/FileDePartitioner.java">
 <persistable path="/FCD/src/partitionerEngine/FileDePartitioner.java"/>
 </file>
