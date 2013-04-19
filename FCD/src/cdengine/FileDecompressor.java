@@ -36,7 +36,7 @@ public class FileDecompressor {
 		percent = 1;
 		aryIndex = 0;
 		outIndex = 0;
-		
+		reportPercent(0);
 		while(aryIndex < fileArray.length)
 		{
 			reportPercent(aryIndex);
@@ -92,6 +92,8 @@ public class FileDecompressor {
 				return;
 			}
 		}
+		System.out.println("Can't find Huffman code.");
+		System.exit(1);
 		exit = true;
 	}
 	

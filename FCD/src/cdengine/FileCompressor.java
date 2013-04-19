@@ -54,7 +54,8 @@ public class FileCompressor {
 		
 		sb = new StringBuilder();
 		percent = 1;
-
+		
+		reportPercent(0);
 		for(int i = 0; i < fileArray.length; i++)
 		{
 			reportPercent(i);
@@ -212,6 +213,7 @@ public class FileCompressor {
 		codes[p.get(0).getData()] = s;
 		
 		int n = 1;
+		boolean x = false;
 		for(int i = 1; i < p.size(); i++)
 		{
 			while(Integer.toBinaryString(n).length() < 
@@ -222,9 +224,12 @@ public class FileCompressor {
 			
 			p.get(i).setCanCode(Integer.toBinaryString(n));
 			codes[p.get(i).getData()] = Integer.toBinaryString(n);
-			if(Integer.parseInt(Integer.toBinaryString(n+1),2) < 0)
-				n = 0;
-			n++;
+			
+			/*s = Integer.toBinaryString(n+1);
+			if(!s.contains("0"))//(Integer.parseInt(s, 2) < 0)
+				n = n << 1; //TODO: Modified
+			else*/
+				n++;
 		}
 		
 		String out = "";

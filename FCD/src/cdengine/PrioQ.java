@@ -90,10 +90,10 @@ public class PrioQ {
 			else if(n.getCount() == prioQ.get(x).getCount() || 
 			  (n.getCount() < prioQ.get(x).getCount() && n.getCount() >= prioQ.get(x-1).getCount()))
 			{
-				int i = x;
+				/*int i = x;
 				while(x + 1 < prioQ.size() &&
 						prioQ.get(x).getData() > prioQ.get(x+1).getData())
-					x++;
+					x++;*/
 				prioQ.add(x, n);
 				break;
 			}
